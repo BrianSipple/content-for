@@ -61,14 +61,84 @@
         </section>
 
         <section>
-          <h2>The <code>{{content-for}} helper</h2>
-          <p>Write a talk here.</p>
+          <h2>The <code>{{content-for}}</code> helper</h2>
+          <p><img src="img/content-for.png" alt="content-for hooks"/></p>
           <aside class="notes">
-
+            <p>The content-for helper exposes hooks to insert string content into areas of your index template.</p>
           </aside>
         </section>
 
-        <section style="text-align: left;">
+        <section>
+          <h2>Comparison with Rails</h2>
+<pre><code data-trim contenteditable>
+/ layout.html.slim
+
+html
+  head
+    = yield :head
+</code></pre>
+<pre><code data-trim contenteditable>
+/ index.html.slim
+
+- content_for :head do
+  javascript:
+    console.log('Hello world');
+
+p Hello world
+</code></pre>
+          <aside class="notes">
+            <p>You've probably seen this in the similarly named content_for helper in Rails.</p>
+            <p>They call this a capture helper; you can capture content and then output it later.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Ember CLI Defaults</h2>
+          <p><img src="img/injected.png" alt="Injected head hook"></p>
+          <aside class="notes">
+            <p>By default, Ember CLI uses the "head" hook to:</p>
+            <ul>
+              <li>inject the baseUrl</li>
+              <li>meta tag which contains environment info</li>
+              <li>livereload script</li>
+            </ul>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          <p><img src="img/impl.png" alt="content-for implementation"></p>
+          <aside class="notes">
+          </aside>
+        </section>
+
+        <section style="text-align: left">
+          <h2 style="text-align: center">Available "Hooks"</h2>
+          <ul>
+            <li>head</li>
+            <li>config-module</li>
+            <li>app</li>
+            <li>head-footer</li>
+            <li>test-header-footer</li>
+            <li>body-footer</li>
+            <li>test-body-footer</li>
+          </ul>
+          <p>Addons can also implement this method and could also define additional types (eg. 'some-addon-section').</p>
+          <aside class="notes">
+          </aside>
+        </section>
+
+        <!--
+        <section>
+          <h2>Title</h2>
+          <p>Content</p>
+          <aside class="notes">
+            <p>Notes</p>
+          </aside>
+        </section>
+        -->
+
+        <section>
           <h2>Thanks, Ember.YVR!</h2>
 
           <p>Reach out to <a target="_blank" href="http://twitter.com/typeoneerror">@typeoneerror</a> on Twitter with questions</p>
