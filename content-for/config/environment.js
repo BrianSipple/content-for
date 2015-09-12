@@ -6,6 +6,13 @@ module.exports = function(environment) {
     environment: environment,
     baseURL: '/',
     locationType: 'auto',
+
+    contentSecurityPolicy: {
+      'script-src':  "'self' w.soundcloud.com",
+      'connect-src': "soundcloud.com",
+      'frame-src':   "'self' w.soundcloud.com"
+    },
+
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
