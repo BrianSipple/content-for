@@ -65,6 +65,7 @@
           <p><img src="img/content-for.png" alt="content-for hooks"/></p>
           <aside class="notes">
             <p>The content-for helper exposes hooks to insert string content into areas of your index template.</p>
+            <p>You've probably seen these little helper calls in your entry point index.html, but if you're not developing an addon yet, you may not have known what they're for.</p>
           </aside>
         </section>
 
@@ -89,6 +90,7 @@ p Hello world
           <aside class="notes">
             <p>You've probably seen this in the similarly named content_for helper in Rails.</p>
             <p>They call this a capture helper; you can capture content and then output it later.</p>
+            <p>This example shows and index action defining the content for :head that'll be injected into the layout.</p>
           </aside>
         </section>
 
@@ -96,42 +98,110 @@ p Hello world
           <h2>Ember CLI Defaults</h2>
           <p><img src="img/injected.png" alt="Injected head hook"></p>
           <aside class="notes">
+            <p>Let's look at how Ember CLI uses these hooks.</p>
             <p>By default, Ember CLI uses the "head" hook to:</p>
             <ul>
               <li>inject the baseUrl</li>
               <li>meta tag which contains environment info</li>
-              <li>livereload script</li>
+              <li>livereload script is added via express server middleware</li>
             </ul>
           </aside>
         </section>
 
         <section>
           <h2>Implementation</h2>
-          <p><img src="img/impl.png" alt="content-for implementation"></p>
+          <p>
+            <a href="https://github.com/ember-cli/ember-cli/blob/8f8de1d44f0a77accf52ad44772055db0cb6286a/lib/broccoli/ember-app.js#L1428" href="_blank"><img src="img/impl.png" alt="content-for implementation"></a>
+          </p>
           <aside class="notes">
+            <p>This is the implementation of contentFor in Ember CLI.</p>
+            <p>The highlighted section shows ember grabbing the result of contentFor for each installed addon and concatenating it</p>
+            <p>_contentForHead simply adds the meta tag we saw earlier that contains the ember app's config object</p>
           </aside>
         </section>
 
         <section style="text-align: left">
           <h2 style="text-align: center">Available "Hooks"</h2>
           <ul>
-            <li>head</li>
+            <li><strong>head</strong></li>
+            <li><strong>head-footer</strong></li>
+            <li><strong>body</strong></li>
+            <li><strong>body-footer</strong></li>
             <li>config-module</li>
             <li>app</li>
-            <li>head-footer</li>
             <li>test-header-footer</li>
-            <li>body-footer</li>
             <li>test-body-footer</li>
           </ul>
           <p>Addons can also implement this method and could also define additional types (eg. 'some-addon-section').</p>
           <aside class="notes">
+            <p>This is the list of "out-of-the-box" content-for hooks that you can append to in your addons.</p>
+            <p>You could also add your own hooks in your addon and write docs so others can consume your addon and use your hooks.</p>
           </aside>
+        </section>
+
+        <section>
+          <h2>Example Addon Usage</h2>
+          <p>Create an "in-rep" addon:</p>
+
+<pre><code data-trim contenteditable>
+$ ember generate in-repo-addon soundcloud
+</code></pre>
+
+          <p>Implement `contentFor` in add-on's entry point <em>index.js</em>.</p>
+
+<pre><code data-trim contenteditable>
+module.exports = {
+  name: 'soundcloud',
+  isDevelopingAddon: function() {
+    return true;
+  },
+  contentFor: function(type, config) {
+    if (type === 'body') {
+      return '<script src="//w.soundcloud.com/player/api.js"></script>';
+    }
+  }
+};
+</code></pre>
+          <p><em>(Restart server after)</em></p>
+          <aside class="notes">
+            <p>Using contentFor is pretty straightforward.</p>
+            <p>We can generate an addon (or in-repo-addon) and implement contentFor in the add-on's entry point (index.js).</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Update Content Security Policy</h2>
+          <p>In our example, we added a remote resource, so we'll need to update CSP to reflect in <em>config/environment.js</em></p>
+<pre><code data-trim contenteditable>
+module.exports = function(environment) {
+  var ENV = {
+    contentSecurityPolicy: {
+      'script-src':  "'self' w.soundcloud.com",
+      'connect-src': "soundcloud.com",
+      'frame-src':   "'self' w.soundcloud.com"
+    }
+  }
+}
+</code></pre>
+          <aside class="notes">
+            <p>Notes</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Updating Content Security Policy from add-on</h2>
+          <p>It's coming! There's an RFC.</p>
+          <p><a href="https://github.com/ember-cli/rfcs/pull/22" target="_blank">https://github.com/ember-cli/rfcs/pull/22</a></p>
+          <p><img src="img/slack-chat.png" alt="slack chat with @rjwblue"></p>
         </section>
 
         <!--
         <section>
           <h2>Title</h2>
           <p>Content</p>
+<pre><code data-trim contenteditable>
+code
+</code></pre>
           <aside class="notes">
             <p>Notes</p>
           </aside>
