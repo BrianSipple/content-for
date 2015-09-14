@@ -1,6 +1,9 @@
 /* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
+var env = process.env.EMBER_ENV;
+var config = require('./config/environment')(env);
+
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     inlineContent: {
@@ -9,7 +12,13 @@ module.exports = function(defaults) {
       },
       'javascript-content': 'lib/file.js',
       'css-content': 'lib/file.css',
-      'text-content': 'lib/file.txt'
+      'text-content': 'lib/file.txt',
+      'post-process-content': {
+        file: 'lib/config.js',
+        postProcess: function(content) {
+          return content.replace(/\{\{CONFIG_THING_ID\}\}/g, config.CONFIG_THING_ID);
+        }
+      }
     }
   });
 
