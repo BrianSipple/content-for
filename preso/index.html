@@ -57,6 +57,7 @@
             </p>
           </small>
           <aside class="notes">
+            <p>Hello, I'm Ben and today I'm gonna talk about Ember CLI's content-for helper and the related ember-cli-inline-content helper.</p>
           </aside>
         </section>
 
@@ -88,9 +89,10 @@ html
 p Hello world
 </code></pre>
           <aside class="notes">
-            <p>You've probably seen this in the similarly named content_for helper in Rails.</p>
+            <p>If you've used Rails before, you've probably seen this in the similarly named content_for helper.</p>
             <p>They call this a capture helper; you can capture content and then output it later.</p>
             <p>This example shows and index action defining the content for :head that'll be injected into the layout.</p>
+            <p>Content is captured in the lower content_for block and spit out by "yielding" in a parent template.</p>
           </aside>
         </section>
 
@@ -111,7 +113,7 @@ p Hello world
         <section>
           <h2>Implementation</h2>
           <p>
-            <a href="https://github.com/ember-cli/ember-cli/blob/8f8de1d44f0a77accf52ad44772055db0cb6286a/lib/broccoli/ember-app.js#L1428" href="_blank"><img src="img/impl.png" alt="content-for implementation"></a>
+            <a href="https://github.com/ember-cli/ember-cli/blob/8f8de1d44f0a77accf52ad44772055db0cb6286a/lib/broccoli/ember-app.js#L1428" target="_blank"><img src="img/impl.png" alt="content-for implementation"></a>
           </p>
           <aside class="notes">
             <p>This is the implementation of contentFor in Ember CLI.</p>
@@ -141,15 +143,15 @@ p Hello world
 
         <section>
           <h2>Example Addon Usage</h2>
-          <p>Create an "in-rep" addon:</p>
+          <p>Create an "in-repo" addon:</p>
 
-<pre><code data-trim contenteditable>
+<pre><code data-trim contenteditable class="no-highlight">
 $ ember generate in-repo-addon soundcloud
 </code></pre>
 
-          <p>Implement `contentFor` in add-on's entry point <em>index.js</em>.</p>
+          <p>Implement <code>contentFor</code> in add-on's entry point <em>index.js</em>.</p>
 
-<pre><code data-trim contenteditable>
+<pre><code data-trim contenteditable class="js">
 module.exports = {
   name: 'soundcloud',
   isDevelopingAddon: function() {
@@ -157,12 +159,11 @@ module.exports = {
   },
   contentFor: function(type, config) {
     if (type === 'body') {
-      return '<script src="//w.soundcloud.com/player/api.js"></script>';
+      return '&lt;script src="//w.soundcloud.com/player/api.js"&gt;&lt;/script&gt;';
     }
   }
 };
 </code></pre>
-          <p><em>(Restart server after)</em></p>
           <aside class="notes">
             <p>Using contentFor is pretty straightforward.</p>
             <p>We can generate an addon (or in-repo-addon) and implement contentFor in the add-on's entry point (index.js).</p>
@@ -172,7 +173,7 @@ module.exports = {
         <section>
           <h2>Update Content Security Policy</h2>
           <p>In our example, we added a remote resource, so we'll need to update CSP to reflect in <em>config/environment.js</em></p>
-<pre><code data-trim contenteditable>
+<pre><code data-trim contenteditable class="js">
 module.exports = function(environment) {
   var ENV = {
     contentSecurityPolicy: {
@@ -184,7 +185,6 @@ module.exports = function(environment) {
 }
 </code></pre>
           <aside class="notes">
-            <p>Notes</p>
           </aside>
         </section>
 
@@ -193,13 +193,116 @@ module.exports = function(environment) {
           <p>It's coming! There's an RFC.</p>
           <p><a href="https://github.com/ember-cli/rfcs/pull/22" target="_blank">https://github.com/ember-cli/rfcs/pull/22</a></p>
           <p><img src="img/slack-chat.png" alt="slack chat with @rjwblue"></p>
+          <aside class="notes">
+            <p>Side note: Robert Jackson recommends explicitly telling the consumers of your addon to set the CSP manually.</p>
+            <p>Support for addon's supplying their own CSP settings in a JSON file is in the works.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>More Control?</h2>
+          <p><strong>Enter <em>ember-cli-inline-content</em>!</strong></p>
+          <p><a href="https://github.com/gdub22/ember-cli-inline-content" target="_blank">https://github.com/gdub22/ember-cli-inline-content</a></p>
+
+<pre><code data-trim contenteditable>
+$ npm install --save-dev ember-cli-inline-content
+</code></pre>
+          <aside class="notes">
+            <p>Where content-for only allows you to use the predefined hooks, ember-cli-inline-content allows you to define your own named hooks.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Displaying a string</h2>
+
+<pre><code data-trim contenteditable class="js">
+// ember-cli-build.js
+var app = new EmberApp(defaults, {
+  inlineContent: {
+    'string-content': {
+      content: '<!-- HELLO WORLD -->'
+    }
+  }
+});
+</code></pre>
+
+<pre><code data-trim contenteditable class="handlebars">
+{{! app/index.html }}
+&lt;/html&gt;
+{{content-for 'string-content'}}
+</code></pre>
+
+          <p><img src="img/hello.png" alt="content-for inline string" width="300"></p>
+
+          <aside class="notes">
+            <p>The first thing the addon gives us is the ability to append to strings to a content-for block.</p>
+            <p>In this case, we defined the inlineContent property in our "brocfile".</p>
+            <p>You can use a simple string for your key names; in this example we called it 'string content.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Inline Rendering File Contents</h2>
+          <p>Content is rendered inline and wrapped in <code>&lt;script&gt;</code> or <code>&lt;style&gt;</code> if applicable.</p>
+
+<pre><code data-trim contenteditable class="js">
+inlineContent: {
+  'javascript-content': 'lib/file.js',
+  'css-content': 'lib/file.css',
+  'text-content': 'lib/file.txt'
+}
+</code></pre>
+
+<pre><code data-trim contenteditable class="html">
+{{content-for 'javascript-content'}}
+{{content-for 'css-content'}}
+{{content-for 'text-content'}}
+</code></pre>
+
+          <aside class="notes">
+            <p>The second use case of the addon is rendering the contents of a file inline.</p>
+            <p>Basic use is just assigning a file path to each key.</p>
+            <p>Plugin is designed to wrap the output in script or style tags based on the extension.</p>
+            <p>You'll need to update your content security policy to allow inline for scripts and styles.</p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Post-Process Content</h2>
+          <p>Use <code>postProcess</code> hook to modify content before injection.</p>
+<pre><code data-trim contenteditable class="js">
+inlineContent:
+  'post-process-content': {
+    file: 'lib/config.js',
+    postProcess: function(content) {
+      return content.replace(/\{\{CONFIG_THING_ID\}\}/g, config.CONFIG_THING_ID);
+    }
+  }
+}
+</code></pre>
+
+<pre><code data-trim contenteditable class="html">
+<!-- {{CONFIG_THING_ID}} -->
+</code></pre>
+
+<pre><code data-trim contenteditable class="js">
+if (environment === 'development') {
+  ENV.CONFIG_THING_ID = '123';
+}
+</code></pre>
+          <aside class="notes">
+            <p>Finally, the addon exposes a "postProcess" method that we can implement under a key.</p>
+            <p>This'll grab the contents of the specified file and then give it up to you to modify before inserting it.</p>
+            <p>Here we see a configuration value being pulled from the environment file and we end up with a comment with '123' inside it when injected.</p>
+            <p>Many of the examples I've seen with custom content-for are things like Google Analytics and other external libraries.</p>
+          </aside>
         </section>
 
         <!--
         <section>
           <h2>Title</h2>
           <p>Content</p>
-<pre><code data-trim contenteditable>
+<pre><code data-trim contenteditable class="">
 code
 </code></pre>
           <aside class="notes">
@@ -209,7 +312,7 @@ code
         -->
 
         <section>
-          <h2>Thanks, Ember.YVR!</h2>
+          <h2>That's it, thanks, Ember.YVR!</h2>
 
           <p>Reach out to <a target="_blank" href="http://twitter.com/typeoneerror">@typeoneerror</a> on Twitter with questions</p>
 
