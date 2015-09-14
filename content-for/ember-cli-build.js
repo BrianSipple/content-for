@@ -6,7 +6,8 @@ module.exports = function(defaults) {
     inlineContent: {
       'string-content': {
         content: '<!-- HELLO WORLD -->'
-      }
+      },
+      'file-content': 'lib/file.js'
     }
   });
 

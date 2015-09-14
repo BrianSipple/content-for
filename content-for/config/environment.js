@@ -8,7 +8,7 @@ module.exports = function(environment) {
     locationType: 'auto',
 
     contentSecurityPolicy: {
-      'script-src':  "'self' w.soundcloud.com",
+      'script-src':  "'self' 'unsafe-inline' w.soundcloud.com",
       'connect-src': "soundcloud.com",
       'frame-src':   "'self' w.soundcloud.com"
     },
