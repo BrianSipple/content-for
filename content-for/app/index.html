@@ -13,10 +13,11 @@
     <link rel="stylesheet" href="assets/content-for.css">
 
     {{content-for 'head-footer'}}
-
-    {{content-for 'file-content'}}
+    {{content-for 'javascript-content'}}
+    {{content-for 'css-content'}}
   </head>
   <body>
+    {{content-for 'text-content'}}
     {{content-for 'body'}}
 
     <script src="assets/vendor.js"></script>

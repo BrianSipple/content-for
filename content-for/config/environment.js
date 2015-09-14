@@ -10,7 +10,8 @@ module.exports = function(environment) {
     contentSecurityPolicy: {
       'script-src':  "'self' 'unsafe-inline' w.soundcloud.com",
       'connect-src': "soundcloud.com",
-      'frame-src':   "'self' w.soundcloud.com"
+      'frame-src':   "'self' w.soundcloud.com",
+      'style-src':   "'self' 'unsafe-inline'"
     },
 
     EmberENV: {

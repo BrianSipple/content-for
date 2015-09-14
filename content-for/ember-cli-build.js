@@ -7,7 +7,9 @@ module.exports = function(defaults) {
       'string-content': {
         content: '<!-- HELLO WORLD -->'
       },
-      'file-content': 'lib/file.js'
+      'javascript-content': 'lib/file.js',
+      'css-content': 'lib/file.css',
+      'text-content': 'lib/file.txt'
     }
   });
 
